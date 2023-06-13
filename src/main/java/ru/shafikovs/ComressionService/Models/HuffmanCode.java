@@ -1,7 +1,5 @@
 package ru.shafikovs.ComressionService.Models;
 
-import ru.shafikovs.ComressionService.Services.Node;
-
 public class HuffmanCode {
     private Node huffmanTree;
     private String code;

@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.shafikovs.ComressionService.Models.FileMetadata;
 import ru.shafikovs.ComressionService.Models.HuffmanCode;
+import ru.shafikovs.ComressionService.Models.Node;
 
 import java.io.DataOutputStream;
 import java.io.FileOutputStream;

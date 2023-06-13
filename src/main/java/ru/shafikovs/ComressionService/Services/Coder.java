@@ -1,6 +1,7 @@
 package ru.shafikovs.ComressionService.Services;
 
 import ru.shafikovs.ComressionService.Models.HuffmanCode;
+import ru.shafikovs.ComressionService.Models.Node;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -50,8 +51,8 @@ public class Coder {
         Queue<Node> queueOfNodes = new PriorityQueue<>();
         for (var entry : frequencyOfSymbols.entrySet()) {
             Node newNode = new Node();
-            newNode.iData = entry.getValue();
-            newNode.fData = entry.getKey();
+            newNode.setiData(entry.getValue());
+            newNode.setfData(entry.getKey());
             queueOfNodes.add(newNode);
         }
         return queueOfNodes;
