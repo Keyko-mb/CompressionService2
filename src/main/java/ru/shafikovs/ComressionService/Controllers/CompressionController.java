@@ -1,5 +1,6 @@
 package ru.shafikovs.ComressionService.Controllers;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
@@ -16,6 +17,7 @@ import ru.shafikovs.ComressionService.Services.CompressionService;
 import java.io.IOException;
 import java.nio.file.Path;
 
+@Slf4j
 @RestController
 @RequestMapping("/compress")
 public class CompressionController {
@@ -31,13 +33,13 @@ public class CompressionController {
         String originalFormat = file.getContentType();
         String originalFileName = file.getOriginalFilename();
         FileMetadata fileMetadata = new FileMetadata(originalFileName, originalFormat);
-        System.out.println("originalFileName " + originalFileName);
+        log.info("File {}{} is received", originalFileName, originalFormat);
 
-        String compressedFilePath = compressionService.compress(file, fileMetadata);
+        String compressedFilePath = compressionService.compress(file.getBytes(), fileMetadata);
 
         Path compressedFile = Path.of(compressedFilePath);
         String compressedFileName = (originalFileName.split("\\.")[0] + "-compressed.bin").replace(" ", "_");
-        System.out.println(compressedFileName);
+        log.info("Name of compressed file {}", compressedFileName);
 
         return ResponseEntity.status(HttpStatus.OK)
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=" + compressedFileName)

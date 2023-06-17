@@ -28,9 +28,7 @@ public class Coder {
         System.out.println("Кодовая таблица");
         System.out.println(codesForSymbols);
 
-//        System.out.println("Строка в закодированном виде");
         String lineAfterCoding = coding(line, codesForSymbols);
-//        System.out.println(lineAfterCoding);
 
         return new HuffmanCode(root, lineAfterCoding);
     }

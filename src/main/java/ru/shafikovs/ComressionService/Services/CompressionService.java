@@ -1,7 +1,7 @@
 package ru.shafikovs.ComressionService.Services;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 import ru.shafikovs.ComressionService.Models.FileMetadata;
 import ru.shafikovs.ComressionService.Models.HuffmanCode;
 import ru.shafikovs.ComressionService.Models.Node;
@@ -14,13 +14,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 @Service
+@Slf4j
 public class CompressionService {
-    public String compress(MultipartFile file, FileMetadata metadata) throws IOException {
-        byte[] bytes = file.getBytes();
+    public String compress(byte[] bytes, FileMetadata metadata) throws IOException {
         Coder coder = new Coder();
         HuffmanCode huffmanCode = coder.compress(bytes);
-//        System.out.println("huffmanTree " + huffmanCode.getHuffmanTree());
-//        System.out.println("codedLine " + huffmanCode.getCode());
+        log.info("Huffman code is created");
 
         return writeBinFile(huffmanCode.getHuffmanTree(), huffmanCode.getCode(), metadata);
     }
@@ -32,41 +31,34 @@ public class CompressionService {
         ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(filePath));
         objectOutputStream.writeObject(huffmanTree);
         objectOutputStream.close();
-
-        System.out.println("huffmanTree: " + huffmanTree);
-        System.out.println("text: " + text);
+        log.info("Huffman tree was written");
 
         try (DataOutputStream dos = new DataOutputStream(new FileOutputStream(filePath, true))) {
             dos.writeShort(metadata.getOriginalFileName().length());
             dos.writeChars(metadata.getOriginalFileName());
-
-            System.out.println("metadata.getOriginalFileName().length(): " + metadata.getOriginalFileName().length());
-            System.out.println("metadata.getOriginalFileName(): " + metadata.getOriginalFileName());
-
             dos.writeShort(metadata.getOriginalFormat().length());
             dos.writeChars(metadata.getOriginalFormat());
-
-            System.out.println("metadata.getOriginalFormat().length(): " + metadata.getOriginalFormat().length());
-            System.out.println("metadata.getOriginalFormat(): " + metadata.getOriginalFormat());
+            log.info("File metadata was written");
 
             for (int i = 0; i < text.length(); i += 8) {
                 if (i + 8 >= text.length()) {
                     int ost = text.length() - i;
                     int intValue = Integer.parseInt((text.substring(i, i + ost)), 2);
                     dos.write(intValue);
-                    System.out.println("text.substring(i, i + ost): " + text.substring(i, i + ost));
-                    System.out.println("intValue: " + intValue);
                 } else {
                     int intValue = Integer.parseInt((text.substring(i, i + 8)), 2);
-                    System.out.println("text.substring(i, i + 8)): " + text.substring(i, i + 8));
-                    System.out.println("intValue " + intValue);
                     dos.write(intValue);
                 }
             }
 
+            log.info("Huffman code was written");
+
         } catch (IOException e) {
             e.printStackTrace();
+            log.error("Writing error {}", e.getMessage());
         }
+
+
         return filePath;
     }
 }
